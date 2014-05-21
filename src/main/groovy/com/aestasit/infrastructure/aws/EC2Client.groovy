@@ -41,6 +41,7 @@ import com.amazonaws.services.ec2.model.EbsBlockDevice
 import com.amazonaws.services.ec2.model.Filter
 import com.amazonaws.services.ec2.model.InstanceType
 import com.amazonaws.services.ec2.model.IpPermission
+import com.amazonaws.services.ec2.model.Placement
 import com.amazonaws.services.ec2.model.RunInstancesRequest
 import com.amazonaws.services.ec2.model.StopInstancesRequest
 import com.amazonaws.services.ec2.model.Tag
@@ -92,9 +93,13 @@ class EC2Client {
       int portToProbe = 22,
       int esbVolumeSize = -1,
       String instanceName = null,
-      Map<String, String> additionalTags = [:]) {
+      Map<String, String> additionalTags = [:],
+      String availabilityZone ) {
 
     def req = new RunInstancesRequest() 
+    def placement = new Placement()
+    placement.availabilityZone = availabilityZone
+    req.placement = placement
     req.keyName = keyName
     req.imageId = ami
     req.securityGroups = [ securityGroup ]
