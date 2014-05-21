@@ -4,7 +4,10 @@ import com.aestasit.infrastructure.aws.request.ElasticLoadBalancingRequestBuilde
 import com.amazonaws.auth.SystemPropertiesCredentialsProvider 
 import com.amazonaws.regions.Region
 import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerResult
+import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersRequest
+import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersResult
 import com.amazonaws.services.elasticloadbalancing.model.Instance
+import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription
 import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerRequest
 import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerResult
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancing
@@ -35,5 +38,13 @@ class ElasticLoadBalancingClient {
 		def deregisterRequest = requestBuilder.withLoadBalancerName(loadBalancerName).withInstancesIds(intancesIds).buildDeregisterInstancesRequest();
 		loadBalancingClient.deregisterInstancesFromLoadBalancer(deregisterRequest)
 	}
-	
+
+	List<String> listAllInstanceIds() {
+		DescribeLoadBalancersRequest request = new DescribeLoadBalancersRequest()
+			.withLoadBalancerNames(loadBalancerName)
+		DescribeLoadBalancersResult result  = loadBalancingClient.describeLoadBalancers(request);
+		List<LoadBalancerDescription> descriptions = result.loadBalancerDescriptions;
+		LoadBalancerDescription description = descriptions.get(0);
+		description.instances.collect{it.instanceId};
+	}
 }
